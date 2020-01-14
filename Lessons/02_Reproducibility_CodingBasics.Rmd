@@ -1,6 +1,6 @@
 ---
 title: "2: Reproducibility and Coding Basics"
-author: "Environmental Data Analytics | Kateri Salk"
+author: "Environmental Data Analytics | Yang Wang"
 date: "Spring 2020"
 output: pdf_document
 geometry: margin=2.54cm
@@ -29,9 +29,9 @@ editor_options:
 
 ### Rules and Conventions
 
-* Data stored in nonproprietary software (e.g., .csv, .md, .txt)
-* File names in ASCII text
-* No spaces!
+* Data stored in nonproprietary software (e.g., .csv, .md, .txt)??
+* File names in ASCII text??
+* No spaces!(_or/)
 * Consistent file naming conventions
 * Store data, code, and output in separate folders
 
