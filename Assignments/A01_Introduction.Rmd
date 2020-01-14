@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Yang Wang"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -22,21 +22,21 @@ The completed exercise is due on Tuesday, January 14th at 1:00 pm.
 
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I have experience of R and data analytics by taking ENV710 last semester. I do not have any experience of Git.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: Models
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: Git, data visualization and communicaiton
 
 
 ## 2) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository  and that you have updated your course README file. 
 
-> Answer: 
+> Answer:https://github.com/Yang190809/Environmental_Data_Analytics_2020
 
 
