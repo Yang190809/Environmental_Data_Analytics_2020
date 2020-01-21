@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Yang Wang"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -32,11 +32,14 @@ The completed exercise is due on Tuesday, January 21 at 1:00 pm.
 4. Insert comments in your code to describe what you are doing.
 
 ```{r}
-#1. 
-
+#1.
+q1 <-seq(from=1,to=100,by=4) #create a sequence from 1 to 100, increasing by fours.
+q1
 #2. 
-
+mean(q1)#get mean of the sequence
+median(q1)#get median of the sequence
 #3. 
+mean(q1)>median(q1)#compare mean to median
 
 ```
 
@@ -51,21 +54,47 @@ The completed exercise is due on Tuesday, January 21 at 1:00 pm.
 8. Label the columns of your data frame with informative titles.
 
 ```{r}
+#5.
+v1 <- c("Alice" ,"Bob" ,"Candy","Diane")# character vector
+
+v2 <- c(49, 69, 79, 89)# numeric vector
+v3 <- c(FALSE, TRUE, TRUE, TRUE)#logical vector
+#7.
+class.grade <- data.frame(v1, v2, v3)
+#8.
+names(class.grade)<- c("names", "scores","Passed"); View(class.grade)
 
 ```
 
 9. QUESTION: How is this data frame different from a matrix?
-
+ 
 > Answer: 
+In a data frame, columns can have different modes (e.g., numeric and factor), while a matrix can only contain  elements of the same type.
 
 10. Create a function with an if/else statement. Your function should determine whether a test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. Hint: Use `print`, not `return`. The name of your function should be informative.
 
 11. Apply your function to the vector with test scores that you created in number 5. 
 
 ```{r}
+#10
+#use ifelse
+lo1 <- function(x) {ifelse(x>50,TRUE, FALSE)}
+lo1(x = v2)
+
+#use if else
+lo <- function(x) {
+  if(x > 50) {
+    print(TRUE)
+  } 
+  else {
+    print(FALSE)
+  }
+}
+lo(x = v2)
+
 
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: 
+> Answer: Ifelse worked because it returned all the results. If and else did not work as it only returned the first results.
