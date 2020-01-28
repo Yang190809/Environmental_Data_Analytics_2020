@@ -122,7 +122,7 @@ ggplot(Neonics, aes(x = Neonics$Endpoint)) +
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018. 
 ```{r}
 class(Litter$collectDate)
-Litter$collectDate <- as.Date(Litter$collectDate,format="%d-%m-%Y") 
+Litter$collectDate <- as.Date(Litter$collectDate,format="%Y-%m-%d") 
 class(Litter$collectDate)
 unique(Litter$collectDate)
 
