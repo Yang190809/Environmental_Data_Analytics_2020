@@ -18,15 +18,19 @@ editor_options:
 Today we will work with a dataset from the [North Temperate Lakes Long-Term Ecological Research Station](https://lter.limnology.wisc.edu/about/overview). The NTL-LTER is located in the boreal zone in northern Wisconsin, USA. We will use the [chemical and physical limnology dataset](https://lter.limnology.wisc.edu/content/cascade-project-north-temperate-lakes-lter-core-data-physical-and-chemical-limnology-1984), running from 1984-2016. 
 
 Opening discussion: why might we be interested in long-term observations of temperature, oxygen, and light in lakes?
-
+Ecosystem health, eurafication and alagae boom. 
+ Help to manage and imply to policy and regulation
+ Monitor the climate change
 > Add notes here: 
 
 ```{r, message = FALSE}
 getwd()
 library(tidyverse)
-#install.packages(lubridate)
+#install.packages(lubridate)#always comment out the package installing
 library(lubridate)
 NTL.phys.data <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+
+#. means go in the parent folder, .. means go out the parent folder,../
 
 colnames(NTL.phys.data)
 head(NTL.phys.data)
@@ -62,14 +66,14 @@ vignette("dplyr")
 Filtering allows us to choose certain rows (observations) in our dataset.
 
 Here are the relevant commands used in the `filter` function. Add some notes to designate what these commands mean. 
-`==`
-`!=`
-`<`
-`<=`
-`>`
-`>=`
-`&`
-`|`
+`==`#equal
+`!=`#not equal
+`<`#smaller
+`<=`#smaller and equal
+`>`#bigger
+`>=`#bigger and equal
+`&`#and
+`|`#or
 
 ```{r}
 class(NTL.phys.data$lakeid)
@@ -100,7 +104,7 @@ NTL.phys.data.PeterPaul2 <- filter(NTL.phys.data, lakename != "Central Long Lake
 NTL.phys.data.PeterPaul3 <- filter(NTL.phys.data, lakename %in% c("Paul Lake", "Peter Lake"))
 
 # Choose a range of conditions of a numeric or integer variable
-summary(NTL.phys.data$daynum)
+summary(NTL.phys.data$daynum)#no sample during frozen season
 NTL.phys.data.JunethruOctober1 <- filter(NTL.phys.data, daynum > 151 & daynum < 305)
 NTL.phys.data.JunethruOctober2 <- filter(NTL.phys.data, daynum > 151, daynum < 305)
 NTL.phys.data.JunethruOctober3 <- filter(NTL.phys.data, daynum >= 152 & daynum <= 304)
@@ -110,10 +114,13 @@ NTL.phys.data.JunethruOctober4 <- filter(NTL.phys.data, daynum %in% c(152:304))
 # filter NTL.phys.data for the year 1999
 # what code do you need to use, based on the class of the variable?
 class(NTL.phys.data$year4)
+year99 <- filter(NTL.phys.data, year4 == 1999)
+year99
 
 # Exercise: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
+Tu.year99 <- filter(NTL.phys.data, year4 > 1999 | year4 < 1999 &
+                   lakename=="Tuesday Lake" )
 
 ```
 Question: Why don't we filter using row numbers?
@@ -125,22 +132,22 @@ Question: Why don't we filter using row numbers?
 Arranging allows us to change the order of rows in our dataset. By default, the arrange function will arrange rows in ascending order.
 
 ```{r}
-NTL.phys.data.depth.ascending <- arrange(NTL.phys.data, depth)
+NTL.phys.data.depth.ascending <- arrange(NTL.phys.data, depth)#default is increase
 NTL.phys.data.depth.descending <- arrange(NTL.phys.data, desc(depth))
 
 # Exercise: 
 # Arrange NTL.phys.data by temperature, in descending order. 
 # Which dates, lakes, and depths have the highest temperatures?
 
-
+tem.dat <- arrange(NTL.phys.data, desc(temperature_C))
 ```
 ### Select
 
 Selecting allows us to choose certain columns (variables) in our dataset.
 
 ```{r}
-NTL.phys.data.temps <- select(NTL.phys.data, lakename, sampledate:temperature_C)
-
+NTL.phys.data.temps <- select(NTL.phys.data, lakename, sampledate:temperature_C)#filter is for horizontal and select is usually for column
+no.lakename <- select(NTL.phys.data, -lakename, sampledate:temperature_C)#it only exclude the lakename here
 ```
 ### Mutate
 
