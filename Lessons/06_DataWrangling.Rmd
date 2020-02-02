@@ -184,9 +184,9 @@ Let's say we want to take our raw dataset (NTL.phys.data), *then* filter the dat
 
 ```{r}
 NTL.phys.data.processed <- 
-  NTL.phys.data %>%
-  filter(lakename == "Paul Lake" | lakename == "Peter Lake") %>%
-  select(lakename, sampledate:temperature_C) %>%
+  NTL.phys.data %>%#select the data sect then
+  filter(lakename == "Paul Lake" | lakename == "Peter Lake") %>% #select rows
+  select(lakename, sampledate:temperature_C) %>%#select column
   mutate(temperature_F = (temperature_C*9/5) + 32)
   
 ```
