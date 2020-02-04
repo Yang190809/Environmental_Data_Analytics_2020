@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Yang Wang"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -25,8 +25,27 @@ The completed exercise is due on Tuesday, February 4 at 1:00 pm.
 
 ```{r, message = FALSE}
 #1
+getwd()
+library(tidyverse)
+library(lubridate)
+air1<- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv")
+air2<- read.csv("./Data/Raw/EPAair_O3_NC2019_raw.csv")
+air3<- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv")
+air4<- read.csv("./Data/Raw/EPAair_PM25_NC2019_raw.csv")
 
 #2
+dim(air1)
+dim(air2)
+dim(air3)
+dim(air4)
+head(air1)
+head(air2)
+head(air3)
+head(air4)
+str(air1)
+str(air2)
+str(air3)
+str(air4)
 ```
 
 ## Wrangle individual datasets to create processed files.
@@ -37,12 +56,25 @@ The completed exercise is due on Tuesday, February 4 at 1:00 pm.
 
 ```{r}
 #3
-
+#class(air1$Date)
+air1$Date <- as.Date(air1$Date, format = "%m/%d/%Y")
+#class(air1$Date)
+air2$Date <- as.Date(air2$Date, format = "%m/%d/%Y")
+air3$Date <- as.Date(air3$Date, format = "%m/%d/%Y")
+air4$Date <- as.Date(air4$Date, format = "%m/%d/%Y")
 #4
-
+air1.1<- select(air1,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+air2.1<- select(air2,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+air3.1<- select(air3,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+air4.1<- select(air4,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 #5
-
+air3.1$AQS_PARAMETER_DESC<- "PM2.5"
+air4.1$AQS_PARAMETER_DESC<- "PM2.5"
 #6
+write.csv(air1.1, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2018_processed.csv")
+write.csv(air2.1, row.names = FALSE, file = "./Data/Processed/EPAair_O3_NC2019_processed.csv")
+write.csv(air3.1, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2018_processed.csv")
+write.csv(air4.1, row.names = FALSE, file = "./Data/Processed/EPAair_PM25_NC2019_processed.csv")
 
 ```
 
@@ -63,14 +95,37 @@ The completed exercise is due on Tuesday, February 4 at 1:00 pm.
 ```{r}
 #7
 
+air <- rbind(air1.1, air2.1, air3.1, air4.1)
+#summary(air$Site.Name)
+
 #8
+com.site.O3 <- intersect(air1.1$Site.Name, air2.1$Site.Name)
+com.site.PM2.5 <- intersect(air3.1$Site.Name, air4.1$Site.Name)
+com.site <- intersect (com.site.O3, com.site.PM2.5)
+com.site <- com.site[-13]
+
+air.all <- 
+  air%>%
+  filter(Site.Name %in% com.site)%>%
+  
+group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
+summarise(mean.AQI = mean(DAILY_AQI_VALUE), 
+            mean.latitude = mean(SITE_LATITUDE), 
+          mean.longitude = mean(SITE_LONGITUDE))%>%
+  
+mutate( year=year(Date))%>%
+mutate(month = month(Date))
+dim(air.all)
+
 
 #9
+air.spread <- spread(air.all, AQS_PARAMETER_DESC,mean.AQI)
 
 #10
+dim(air.spread)
 
 #11
-
+write.csv(air.spread, row.names = FALSE, file = "./Data/Processed/EPAair_O3_PM25_NC1718_Processed.csv")
 ```
 
 
@@ -82,12 +137,19 @@ The completed exercise is due on Tuesday, February 4 at 1:00 pm.
 ```{r}
 #12a
 
+EPA.air <- 
+  air.spread%>%
+group_by(Site.Name, year,month) %>%
+summarise(mean.Ozone = mean(Ozone), 
+            mean.PM2.5 = mean(PM2.5))%>%
+  drop_na(year, month)
 #12b
 
 #13
+dim(EPA.air)
 
 ```
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: 
+> Answer: Because we don't want to remove the NA in the columns containing mean of ozone and PM2.5 

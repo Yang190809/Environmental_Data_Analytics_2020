@@ -1,0 +1,732 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Assignment 4: Data Wrangling},
+            pdfauthor={Yang Wang},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Assignment 4: Data Wrangling}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Yang Wang}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\hypertarget{overview}{%
+\subsection{OVERVIEW}\label{overview}}
+
+This exercise accompanies the lessons in Environmental Data Analytics on
+Data Wrangling
+
+\hypertarget{directions}{%
+\subsection{Directions}\label{directions}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Change ``Student Name'' on line 3 (above) with your name.
+\item
+  Work through the steps, \textbf{creating code and output} that fulfill
+  each instruction.
+\item
+  Be sure to \textbf{answer the questions} in this assignment document.
+\item
+  When you have completed the assignment, \textbf{Knit} the text and
+  code into a single PDF file.
+\item
+  After Knitting, submit the completed exercise (PDF file) to the
+  dropbox in Sakai. Add your last name into the file name (e.g.,
+  ``Salk\_A04\_DataWrangling.Rmd'') prior to submission.
+\end{enumerate}
+
+The completed exercise is due on Tuesday, February 4 at 1:00 pm.
+
+\hypertarget{set-up-your-session}{%
+\subsection{Set up your session}\label{set-up-your-session}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Check your working directory, load the \texttt{tidyverse} and
+  \texttt{lubridate} packages, and upload all four raw data files
+  associated with the EPA Air dataset. See the README file for the EPA
+  air datasets for more information (especially if you have not worked
+  with air quality data previously).
+\item
+  Explore the dimensions, column names, and structure of the datasets.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#1}
+\KeywordTok{getwd}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "C:/Users/26059/OneDrive/Desktop/ENV 872 R/Yang_ENV872"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\KeywordTok{library}\NormalTok{(lubridate)}
+\NormalTok{air1<-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/EPAair_O3_NC2018_raw.csv"}\NormalTok{)}
+\NormalTok{air2<-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/EPAair_O3_NC2019_raw.csv"}\NormalTok{)}
+\NormalTok{air3<-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/EPAair_PM25_NC2018_raw.csv"}\NormalTok{)}
+\NormalTok{air4<-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/EPAair_PM25_NC2019_raw.csv"}\NormalTok{)}
+
+\CommentTok{#2}
+\KeywordTok{dim}\NormalTok{(air1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 9737   20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dim}\NormalTok{(air2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10592    20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dim}\NormalTok{(air3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 8983   20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{dim}\NormalTok{(air4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 8581   20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(air1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Date Source   Site.ID POC Daily.Max.8.hour.Ozone.Concentration
+## 1 03/01/2018    AQS 370030005   1                                0.043
+## 2 03/02/2018    AQS 370030005   1                                0.046
+## 3 03/03/2018    AQS 370030005   1                                0.047
+## 4 03/04/2018    AQS 370030005   1                                0.049
+## 5 03/05/2018    AQS 370030005   1                                0.047
+## 6 03/06/2018    AQS 370030005   1                                0.030
+##   UNITS DAILY_AQI_VALUE             Site.Name DAILY_OBS_COUNT
+## 1   ppm              40 Taylorsville Liledoun              17
+## 2   ppm              43 Taylorsville Liledoun              17
+## 3   ppm              44 Taylorsville Liledoun              17
+## 4   ppm              45 Taylorsville Liledoun              17
+## 5   ppm              44 Taylorsville Liledoun              17
+## 6   ppm              28 Taylorsville Liledoun              17
+##   PERCENT_COMPLETE AQS_PARAMETER_CODE AQS_PARAMETER_DESC CBSA_CODE
+## 1              100              44201              Ozone     25860
+## 2              100              44201              Ozone     25860
+## 3              100              44201              Ozone     25860
+## 4              100              44201              Ozone     25860
+## 5              100              44201              Ozone     25860
+## 6              100              44201              Ozone     25860
+##                      CBSA_NAME STATE_CODE          STATE COUNTY_CODE
+## 1 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 2 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 3 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 4 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 5 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 6 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+##      COUNTY SITE_LATITUDE SITE_LONGITUDE
+## 1 Alexander       35.9138        -81.191
+## 2 Alexander       35.9138        -81.191
+## 3 Alexander       35.9138        -81.191
+## 4 Alexander       35.9138        -81.191
+## 5 Alexander       35.9138        -81.191
+## 6 Alexander       35.9138        -81.191
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(air2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Date Source   Site.ID POC Daily.Max.8.hour.Ozone.Concentration
+## 1 01/01/2019 AirNow 370030005   1                                0.029
+## 2 01/02/2019 AirNow 370030005   1                                0.018
+## 3 01/03/2019 AirNow 370030005   1                                0.016
+## 4 01/04/2019 AirNow 370030005   1                                0.022
+## 5 01/05/2019 AirNow 370030005   1                                0.037
+## 6 01/06/2019 AirNow 370030005   1                                0.037
+##   UNITS DAILY_AQI_VALUE             Site.Name DAILY_OBS_COUNT
+## 1   ppm              27 Taylorsville Liledoun              24
+## 2   ppm              17 Taylorsville Liledoun              24
+## 3   ppm              15 Taylorsville Liledoun              24
+## 4   ppm              20 Taylorsville Liledoun              24
+## 5   ppm              34 Taylorsville Liledoun              24
+## 6   ppm              34 Taylorsville Liledoun              24
+##   PERCENT_COMPLETE AQS_PARAMETER_CODE AQS_PARAMETER_DESC CBSA_CODE
+## 1              100              44201              Ozone     25860
+## 2              100              44201              Ozone     25860
+## 3              100              44201              Ozone     25860
+## 4              100              44201              Ozone     25860
+## 5              100              44201              Ozone     25860
+## 6              100              44201              Ozone     25860
+##                      CBSA_NAME STATE_CODE          STATE COUNTY_CODE
+## 1 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 2 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 3 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 4 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 5 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+## 6 Hickory-Lenoir-Morganton, NC         37 North Carolina           3
+##      COUNTY SITE_LATITUDE SITE_LONGITUDE
+## 1 Alexander       35.9138        -81.191
+## 2 Alexander       35.9138        -81.191
+## 3 Alexander       35.9138        -81.191
+## 4 Alexander       35.9138        -81.191
+## 5 Alexander       35.9138        -81.191
+## 6 Alexander       35.9138        -81.191
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(air3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Date Source   Site.ID POC Daily.Mean.PM2.5.Concentration    UNITS
+## 1 01/02/2018    AQS 370110002   1                            2.9 ug/m3 LC
+## 2 01/05/2018    AQS 370110002   1                            3.7 ug/m3 LC
+## 3 01/08/2018    AQS 370110002   1                            5.3 ug/m3 LC
+## 4 01/11/2018    AQS 370110002   1                            0.8 ug/m3 LC
+## 5 01/14/2018    AQS 370110002   1                            2.5 ug/m3 LC
+## 6 01/17/2018    AQS 370110002   1                            4.5 ug/m3 LC
+##   DAILY_AQI_VALUE      Site.Name DAILY_OBS_COUNT PERCENT_COMPLETE
+## 1              12 Linville Falls               1              100
+## 2              15 Linville Falls               1              100
+## 3              22 Linville Falls               1              100
+## 4               3 Linville Falls               1              100
+## 5              10 Linville Falls               1              100
+## 6              19 Linville Falls               1              100
+##   AQS_PARAMETER_CODE                     AQS_PARAMETER_DESC CBSA_CODE
+## 1              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 2              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 3              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 4              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 5              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 6              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+##   CBSA_NAME STATE_CODE          STATE COUNTY_CODE COUNTY SITE_LATITUDE
+## 1                   37 North Carolina          11  Avery      35.97235
+## 2                   37 North Carolina          11  Avery      35.97235
+## 3                   37 North Carolina          11  Avery      35.97235
+## 4                   37 North Carolina          11  Avery      35.97235
+## 5                   37 North Carolina          11  Avery      35.97235
+## 6                   37 North Carolina          11  Avery      35.97235
+##   SITE_LONGITUDE
+## 1      -81.93307
+## 2      -81.93307
+## 3      -81.93307
+## 4      -81.93307
+## 5      -81.93307
+## 6      -81.93307
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(air4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         Date Source   Site.ID POC Daily.Mean.PM2.5.Concentration    UNITS
+## 1 01/03/2019    AQS 370110002   1                            1.6 ug/m3 LC
+## 2 01/06/2019    AQS 370110002   1                            1.0 ug/m3 LC
+## 3 01/09/2019    AQS 370110002   1                            1.3 ug/m3 LC
+## 4 01/12/2019    AQS 370110002   1                            6.3 ug/m3 LC
+## 5 01/15/2019    AQS 370110002   1                            2.6 ug/m3 LC
+## 6 01/18/2019    AQS 370110002   1                            1.2 ug/m3 LC
+##   DAILY_AQI_VALUE      Site.Name DAILY_OBS_COUNT PERCENT_COMPLETE
+## 1               7 Linville Falls               1              100
+## 2               4 Linville Falls               1              100
+## 3               5 Linville Falls               1              100
+## 4              26 Linville Falls               1              100
+## 5              11 Linville Falls               1              100
+## 6               5 Linville Falls               1              100
+##   AQS_PARAMETER_CODE                     AQS_PARAMETER_DESC CBSA_CODE
+## 1              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 2              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 3              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 4              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 5              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+## 6              88502 Acceptable PM2.5 AQI & Speciation Mass        NA
+##   CBSA_NAME STATE_CODE          STATE COUNTY_CODE COUNTY SITE_LATITUDE
+## 1                   37 North Carolina          11  Avery      35.97235
+## 2                   37 North Carolina          11  Avery      35.97235
+## 3                   37 North Carolina          11  Avery      35.97235
+## 4                   37 North Carolina          11  Avery      35.97235
+## 5                   37 North Carolina          11  Avery      35.97235
+## 6                   37 North Carolina          11  Avery      35.97235
+##   SITE_LONGITUDE
+## 1      -81.93307
+## 2      -81.93307
+## 3      -81.93307
+## 4      -81.93307
+## 5      -81.93307
+## 6      -81.93307
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(air1)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    9737 obs. of  20 variables:
+##  $ Date                                : Factor w/ 364 levels "01/01/2018","01/02/2018",..: 60 61 62 63 64 65 66 67 68 69 ...
+##  $ Source                              : Factor w/ 1 level "AQS": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Site.ID                             : int  370030005 370030005 370030005 370030005 370030005 370030005 370030005 370030005 370030005 370030005 ...
+##  $ POC                                 : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ Daily.Max.8.hour.Ozone.Concentration: num  0.043 0.046 0.047 0.049 0.047 0.03 0.036 0.044 0.049 0.043 ...
+##  $ UNITS                               : Factor w/ 1 level "ppm": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ DAILY_AQI_VALUE                     : int  40 43 44 45 44 28 33 41 45 40 ...
+##  $ Site.Name                           : Factor w/ 40 levels "","Beaufort",..: 35 35 35 35 35 35 35 35 35 35 ...
+##  $ DAILY_OBS_COUNT                     : int  17 17 17 17 17 17 17 17 17 17 ...
+##  $ PERCENT_COMPLETE                    : num  100 100 100 100 100 100 100 100 100 100 ...
+##  $ AQS_PARAMETER_CODE                  : int  44201 44201 44201 44201 44201 44201 44201 44201 44201 44201 ...
+##  $ AQS_PARAMETER_DESC                  : Factor w/ 1 level "Ozone": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ CBSA_CODE                           : int  25860 25860 25860 25860 25860 25860 25860 25860 25860 25860 ...
+##  $ CBSA_NAME                           : Factor w/ 17 levels "","Asheville, NC",..: 9 9 9 9 9 9 9 9 9 9 ...
+##  $ STATE_CODE                          : int  37 37 37 37 37 37 37 37 37 37 ...
+##  $ STATE                               : Factor w/ 1 level "North Carolina": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ COUNTY_CODE                         : int  3 3 3 3 3 3 3 3 3 3 ...
+##  $ COUNTY                              : Factor w/ 32 levels "Alexander","Avery",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ SITE_LATITUDE                       : num  35.9 35.9 35.9 35.9 35.9 ...
+##  $ SITE_LONGITUDE                      : num  -81.2 -81.2 -81.2 -81.2 -81.2 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(air2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    10592 obs. of  20 variables:
+##  $ Date                                : Factor w/ 365 levels "01/01/2019","01/02/2019",..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ Source                              : Factor w/ 2 levels "AirNow","AQS": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Site.ID                             : int  370030005 370030005 370030005 370030005 370030005 370030005 370030005 370030005 370030005 370030005 ...
+##  $ POC                                 : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ Daily.Max.8.hour.Ozone.Concentration: num  0.029 0.018 0.016 0.022 0.037 0.037 0.029 0.038 0.038 0.03 ...
+##  $ UNITS                               : Factor w/ 1 level "ppm": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ DAILY_AQI_VALUE                     : int  27 17 15 20 34 34 27 35 35 28 ...
+##  $ Site.Name                           : Factor w/ 38 levels "","Beaufort",..: 33 33 33 33 33 33 33 33 33 33 ...
+##  $ DAILY_OBS_COUNT                     : int  24 24 24 24 24 24 24 24 24 24 ...
+##  $ PERCENT_COMPLETE                    : num  100 100 100 100 100 100 100 100 100 100 ...
+##  $ AQS_PARAMETER_CODE                  : int  44201 44201 44201 44201 44201 44201 44201 44201 44201 44201 ...
+##  $ AQS_PARAMETER_DESC                  : Factor w/ 1 level "Ozone": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ CBSA_CODE                           : int  25860 25860 25860 25860 25860 25860 25860 25860 25860 25860 ...
+##  $ CBSA_NAME                           : Factor w/ 15 levels "","Asheville, NC",..: 8 8 8 8 8 8 8 8 8 8 ...
+##  $ STATE_CODE                          : int  37 37 37 37 37 37 37 37 37 37 ...
+##  $ STATE                               : Factor w/ 1 level "North Carolina": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ COUNTY_CODE                         : int  3 3 3 3 3 3 3 3 3 3 ...
+##  $ COUNTY                              : Factor w/ 30 levels "Alexander","Avery",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ SITE_LATITUDE                       : num  35.9 35.9 35.9 35.9 35.9 ...
+##  $ SITE_LONGITUDE                      : num  -81.2 -81.2 -81.2 -81.2 -81.2 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(air3)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    8983 obs. of  20 variables:
+##  $ Date                          : Factor w/ 365 levels "01/01/2018","01/02/2018",..: 2 5 8 11 14 17 20 23 26 29 ...
+##  $ Source                        : Factor w/ 1 level "AQS": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Site.ID                       : int  370110002 370110002 370110002 370110002 370110002 370110002 370110002 370110002 370110002 370110002 ...
+##  $ POC                           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ Daily.Mean.PM2.5.Concentration: num  2.9 3.7 5.3 0.8 2.5 4.5 1.8 2.5 4.2 1.7 ...
+##  $ UNITS                         : Factor w/ 1 level "ug/m3 LC": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ DAILY_AQI_VALUE               : int  12 15 22 3 10 19 8 10 18 7 ...
+##  $ Site.Name                     : Factor w/ 25 levels "","Blackstone",..: 15 15 15 15 15 15 15 15 15 15 ...
+##  $ DAILY_OBS_COUNT               : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ PERCENT_COMPLETE              : num  100 100 100 100 100 100 100 100 100 100 ...
+##  $ AQS_PARAMETER_CODE            : int  88502 88502 88502 88502 88502 88502 88502 88502 88502 88502 ...
+##  $ AQS_PARAMETER_DESC            : Factor w/ 2 levels "Acceptable PM2.5 AQI & Speciation Mass",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ CBSA_CODE                     : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ CBSA_NAME                     : Factor w/ 14 levels "","Asheville, NC",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ STATE_CODE                    : int  37 37 37 37 37 37 37 37 37 37 ...
+##  $ STATE                         : Factor w/ 1 level "North Carolina": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ COUNTY_CODE                   : int  11 11 11 11 11 11 11 11 11 11 ...
+##  $ COUNTY                        : Factor w/ 21 levels "Avery","Buncombe",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ SITE_LATITUDE                 : num  36 36 36 36 36 ...
+##  $ SITE_LONGITUDE                : num  -81.9 -81.9 -81.9 -81.9 -81.9 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(air4)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    8581 obs. of  20 variables:
+##  $ Date                          : Factor w/ 365 levels "01/01/2019","01/02/2019",..: 3 6 9 12 15 18 21 24 27 30 ...
+##  $ Source                        : Factor w/ 2 levels "AirNow","AQS": 2 2 2 2 2 2 2 2 2 2 ...
+##  $ Site.ID                       : int  370110002 370110002 370110002 370110002 370110002 370110002 370110002 370110002 370110002 370110002 ...
+##  $ POC                           : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ Daily.Mean.PM2.5.Concentration: num  1.6 1 1.3 6.3 2.6 1.2 1.5 1.5 3.7 1.6 ...
+##  $ UNITS                         : Factor w/ 1 level "ug/m3 LC": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ DAILY_AQI_VALUE               : int  7 4 5 26 11 5 6 6 15 7 ...
+##  $ Site.Name                     : Factor w/ 25 levels "","Board Of Ed. Bldg.",..: 14 14 14 14 14 14 14 14 14 14 ...
+##  $ DAILY_OBS_COUNT               : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ PERCENT_COMPLETE              : num  100 100 100 100 100 100 100 100 100 100 ...
+##  $ AQS_PARAMETER_CODE            : int  88502 88502 88502 88502 88502 88502 88502 88502 88502 88502 ...
+##  $ AQS_PARAMETER_DESC            : Factor w/ 2 levels "Acceptable PM2.5 AQI & Speciation Mass",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ CBSA_CODE                     : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ CBSA_NAME                     : Factor w/ 14 levels "","Asheville, NC",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ STATE_CODE                    : int  37 37 37 37 37 37 37 37 37 37 ...
+##  $ STATE                         : Factor w/ 1 level "North Carolina": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ COUNTY_CODE                   : int  11 11 11 11 11 11 11 11 11 11 ...
+##  $ COUNTY                        : Factor w/ 21 levels "Avery","Buncombe",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ SITE_LATITUDE                 : num  36 36 36 36 36 ...
+##  $ SITE_LONGITUDE                : num  -81.9 -81.9 -81.9 -81.9 -81.9 ...
+\end{verbatim}
+
+\hypertarget{wrangle-individual-datasets-to-create-processed-files.}{%
+\subsection{Wrangle individual datasets to create processed
+files.}\label{wrangle-individual-datasets-to-create-processed-files.}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Change date to date
+\item
+  Select the following columns: Date, DAILY\_AQI\_VALUE, Site.Name,
+  AQS\_PARAMETER\_DESC, COUNTY, SITE\_LATITUDE, SITE\_LONGITUDE
+\item
+  For the PM2.5 datasets, fill all cells in AQS\_PARAMETER\_DESC with
+  ``PM2.5'' (all cells in this column should be identical).
+\item
+  Save all four processed datasets in the Processed folder. Use the same
+  file names as the raw files but replace ``raw'' with ``processed''.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#3}
+\CommentTok{#class(air1$Date)}
+\NormalTok{air1}\OperatorTok{$}\NormalTok{Date <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(air1}\OperatorTok{$}\NormalTok{Date, }\DataTypeTok{format =} \StringTok{"%m/%d/%Y"}\NormalTok{)}
+\CommentTok{#class(air1$Date)}
+\NormalTok{air2}\OperatorTok{$}\NormalTok{Date <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(air2}\OperatorTok{$}\NormalTok{Date, }\DataTypeTok{format =} \StringTok{"%m/%d/%Y"}\NormalTok{)}
+\NormalTok{air3}\OperatorTok{$}\NormalTok{Date <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(air3}\OperatorTok{$}\NormalTok{Date, }\DataTypeTok{format =} \StringTok{"%m/%d/%Y"}\NormalTok{)}
+\NormalTok{air4}\OperatorTok{$}\NormalTok{Date <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(air4}\OperatorTok{$}\NormalTok{Date, }\DataTypeTok{format =} \StringTok{"%m/%d/%Y"}\NormalTok{)}
+\CommentTok{#4}
+\NormalTok{air1}\FloatTok{.1}\NormalTok{<-}\StringTok{ }\KeywordTok{select}\NormalTok{(air1,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)}
+\NormalTok{air2}\FloatTok{.1}\NormalTok{<-}\StringTok{ }\KeywordTok{select}\NormalTok{(air2,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)}
+\NormalTok{air3}\FloatTok{.1}\NormalTok{<-}\StringTok{ }\KeywordTok{select}\NormalTok{(air3,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)}
+\NormalTok{air4}\FloatTok{.1}\NormalTok{<-}\StringTok{ }\KeywordTok{select}\NormalTok{(air4,Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)}
+\CommentTok{#5}
+\NormalTok{air3}\FloatTok{.1}\OperatorTok{$}\NormalTok{AQS_PARAMETER_DESC<-}\StringTok{ "PM2.5"}
+\NormalTok{air4}\FloatTok{.1}\OperatorTok{$}\NormalTok{AQS_PARAMETER_DESC<-}\StringTok{ "PM2.5"}
+\CommentTok{#6}
+\KeywordTok{write.csv}\NormalTok{(air1}\FloatTok{.1}\NormalTok{, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{file =} \StringTok{"./Data/Processed/EPAair_O3_NC2018_processed.csv"}\NormalTok{)}
+\KeywordTok{write.csv}\NormalTok{(air2}\FloatTok{.1}\NormalTok{, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{file =} \StringTok{"./Data/Processed/EPAair_O3_NC2019_processed.csv"}\NormalTok{)}
+\KeywordTok{write.csv}\NormalTok{(air3}\FloatTok{.1}\NormalTok{, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{file =} \StringTok{"./Data/Processed/EPAair_PM25_NC2018_processed.csv"}\NormalTok{)}
+\KeywordTok{write.csv}\NormalTok{(air4}\FloatTok{.1}\NormalTok{, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{file =} \StringTok{"./Data/Processed/EPAair_PM25_NC2019_processed.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{combine-datasets}{%
+\subsection{Combine datasets}\label{combine-datasets}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  Combine the four datasets with \texttt{rbind}. Make sure your column
+  names are identical prior to running this code.
+\item
+  Wrangle your new dataset with a pipe function (\%\textgreater\%) so
+  that it fills the following conditions:
+\end{enumerate}
+
+\begin{itemize}
+\tightlist
+\item
+  Include all sites that the four data frames have in common: ``Linville
+  Falls'', ``Durham Armory'', ``Leggett'', ``Hattie Avenue'', ``Clemmons
+  Middle'', ``Mendenhall School'', ``Frying Pan Mountain'', ``West
+  Johnston Co.'', ``Garinger High School'', ``Castle Hayne'', ``Pitt
+  Agri. Center'', ``Bryson City'', ``Millbrook School'' (the function
+  \texttt{intersect} can figure out common factor levels)
+\item
+  Some sites have multiple measurements per day. Use the
+  split-apply-combine strategy to generate daily means: group by date,
+  site, aqs parameter, and county. Take the mean of the AQI value,
+  latitude, and longitude.
+\item
+  Add columns for ``Month'' and ``Year'' by parsing your ``Date'' column
+  (hint: \texttt{lubridate} package)
+\item
+  Hint: the dimensions of this dataset should be 14,752 x 9.
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{8}
+\tightlist
+\item
+  Spread your datasets such that AQI values for ozone and PM2.5 are in
+  separate columns. Each location on a specific date should now occupy
+  only one row.
+\item
+  Call up the dimensions of your new tidy dataset.
+\item
+  Save your processed dataset with the following file name:
+  ``EPAair\_O3\_PM25\_NC1718\_Processed.csv''
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#7}
+
+\NormalTok{air <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(air1}\FloatTok{.1}\NormalTok{, air2}\FloatTok{.1}\NormalTok{, air3}\FloatTok{.1}\NormalTok{, air4}\FloatTok{.1}\NormalTok{)}
+\CommentTok{#summary(air$Site.Name)}
+
+\CommentTok{#8}
+\NormalTok{com.site.O3 <-}\StringTok{ }\KeywordTok{intersect}\NormalTok{(air1}\FloatTok{.1}\OperatorTok{$}\NormalTok{Site.Name, air2}\FloatTok{.1}\OperatorTok{$}\NormalTok{Site.Name)}
+\NormalTok{com.site.PM2}\FloatTok{.5}\NormalTok{ <-}\StringTok{ }\KeywordTok{intersect}\NormalTok{(air3}\FloatTok{.1}\OperatorTok{$}\NormalTok{Site.Name, air4}\FloatTok{.1}\OperatorTok{$}\NormalTok{Site.Name)}
+\NormalTok{com.site <-}\StringTok{ }\KeywordTok{intersect}\NormalTok{ (com.site.O3, com.site.PM2}\FloatTok{.5}\NormalTok{)}
+\NormalTok{com.site <-}\StringTok{ }\NormalTok{com.site[}\OperatorTok{-}\DecValTok{13}\NormalTok{]}
+
+\NormalTok{air.all <-}\StringTok{ }
+\StringTok{  }\NormalTok{air}\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(Site.Name }\OperatorTok{%in%}\StringTok{ }\NormalTok{com.site)}\OperatorTok{%>%}
+\StringTok{  }
+\KeywordTok{group_by}\NormalTok{(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) }\OperatorTok{%>%}
+\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{mean.AQI =} \KeywordTok{mean}\NormalTok{(DAILY_AQI_VALUE), }
+            \DataTypeTok{mean.latitude =} \KeywordTok{mean}\NormalTok{(SITE_LATITUDE), }
+          \DataTypeTok{mean.longitude =} \KeywordTok{mean}\NormalTok{(SITE_LONGITUDE))}\OperatorTok{%>%}
+\StringTok{  }
+\KeywordTok{mutate}\NormalTok{( }\DataTypeTok{year=}\KeywordTok{year}\NormalTok{(Date))}\OperatorTok{%>%}
+\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{month =} \KeywordTok{month}\NormalTok{(Date))}
+\KeywordTok{dim}\NormalTok{(air.all)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 14752     9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#9}
+\NormalTok{air.spread <-}\StringTok{ }\KeywordTok{spread}\NormalTok{(air.all, AQS_PARAMETER_DESC,mean.AQI)}
+
+\CommentTok{#10}
+\KeywordTok{dim}\NormalTok{(air.spread)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 8976    9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#11}
+\KeywordTok{write.csv}\NormalTok{(air.spread, }\DataTypeTok{row.names =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{file =} \StringTok{"./Data/Processed/EPAair_O3_PM25_NC1718_Processed.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{generate-summary-tables}{%
+\subsection{Generate summary tables}\label{generate-summary-tables}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{11}
+\item
+  Use the split-apply-combine strategy to generate a summary data frame.
+  Data should be grouped by site, month, and year. Generate the mean AQI
+  values for ozone and PM2.5 for each group. Then, add a pipe to remove
+  instances where a month and year are not available (use the function
+  \texttt{drop\_na} in your pipe).
+\item
+  Call up the dimensions of the summary dataset.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#12a}
+
+\NormalTok{EPA.air <-}\StringTok{ }
+\StringTok{  }\NormalTok{air.spread}\OperatorTok{%>%}
+\KeywordTok{group_by}\NormalTok{(Site.Name, year,month) }\OperatorTok{%>%}
+\KeywordTok{summarise}\NormalTok{(}\DataTypeTok{mean.Ozone =} \KeywordTok{mean}\NormalTok{(Ozone), }
+            \DataTypeTok{mean.PM2.5 =} \KeywordTok{mean}\NormalTok{(PM2}\FloatTok{.5}\NormalTok{))}\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{drop_na}\NormalTok{(year, month)}
+\CommentTok{#12b}
+
+\CommentTok{#13}
+\KeywordTok{dim}\NormalTok{(EPA.air)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 308   5
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{13}
+\tightlist
+\item
+  Why did we use the function \texttt{drop\_na} rather than
+  \texttt{na.omit}?
+\end{enumerate}
+
+\begin{quote}
+Answer: Because we don't want to remove the NA in the columns containing
+mean of ozone and PM2.5
+\end{quote}
+
+
+\end{document}
