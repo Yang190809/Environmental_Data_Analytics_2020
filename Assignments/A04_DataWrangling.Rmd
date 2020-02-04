@@ -153,3 +153,4 @@ dim(EPA.air)
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
 > Answer: Because we don't want to remove the NA in the columns containing mean of ozone and PM2.5 
+
