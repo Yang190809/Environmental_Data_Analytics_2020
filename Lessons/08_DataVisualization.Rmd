@@ -21,8 +21,9 @@ Effective data visualization depends on purposeful choices about graph types. Th
 ```{r, message = FALSE, warning = FALSE}
 getwd()
 library(tidyverse)
-installed.packages("ggridges")
+#install.packages("ggridges")
 library(ggridges)
+
 
 PeterPaul.chem.nutrients <- 
   read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
@@ -234,9 +235,9 @@ print(Nutrientplot7)
 # See https://www.data-to-viz.com/caveat/spaghetti.html for more info.
 
 # Ridgeline plot
-library(ridgel)
+library(ggridges)
 Nutrientplot6 <-
-  ggplot(PeterPaul.chem.nutrients.gathered, aes(y = nutrient, x = concentration)) +
+  ggplot(PeterPaul.chem.nutrients.gathered, aes(y = concentration, x = nutrient)) +
   geom_density_ridges(aes(fill = lakename), alpha = 0.5) #
 print(Nutrientplot6)
 
