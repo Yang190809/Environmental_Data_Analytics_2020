@@ -241,6 +241,7 @@ Nutrientplot6 <-
   geom_density_ridges(aes(fill = lakename), alpha = 0.5) #
 print(Nutrientplot6)
 
+#do not use bar plot unless it is count data, it does not consider
 # Exercise: Plot distributions of AQI values for EPAair
 
 # 1. 
