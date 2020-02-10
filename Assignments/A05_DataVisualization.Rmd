@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Data Visualization"
-author: "Student Name"
+author: "Yang Wang"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,17 +29,28 @@ The completed exercise is due on Tuesday, February 11 at 1:00 pm.
 
 ```{r}
 #1
-
+getwd()
+library(tidyverse)
+#install.packages("cowplot")
+library(cowplot)
+lake<- read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaulGathered_Processed.csv")
+litter<- read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv")
 
 #2
-
-
+class(lake$sampledate)
+lake$sampledate <- as.Date(lake$sampledate, format = "%Y/%m/%d")
+class(litter$collectDate)
+litter$collectDate <- as.Date(litter$collectDate, format = "%Y/%m/%d")
+class(lake$sampledate)
+class(litter$collectDate)
 ```
 ## Define your theme
 3. Build a theme and set it as your default theme.
 
 ```{r}
-
+mytheme <- theme_classic(base_size = 14) + # for the size of label
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
 
 ```
 
@@ -50,7 +61,16 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 
 ```{r}
 
-
+total.p <-
+  ggplot(lake, aes(x = tp_ug, y = po4, color = lakename)) +
+  geom_point(alpha = 0.7, size = 2.5) +xlab("tp(ug/l")+ylab("po4(ug/l)")
+  labs() + # change your legend labels here
+  scale_shape_manual(values = c(15, 17)) +
+  scale_color_distiller(palette = "Blues", direction = 1) + # use scale_color_brewer for discrete variables
+  #scale_color_viridis(option = "magma", direction = -1,end=0.8) +#chop up the bottom 20%
+  theme(legend.position = "right", 
+        legend.text = element_text(size = 12), legend.title = element_text(size = 12))
+print(total.p)
 
 ```
 
