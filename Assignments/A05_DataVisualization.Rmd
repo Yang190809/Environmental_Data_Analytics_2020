@@ -118,8 +118,8 @@ needle.plot <-
 print(needle.plot)
 
 facet.plot <-
-  ggplot(subset(litter, functionalGroup == "Needles") , aes(x = collectDate, y = dryMass, color = nlcdClass)) +
-  labs(x = "Date", y = expression("Dry Mass(g)"), color = "") +
+  ggplot(subset(litter, functionalGroup == "Needles") , aes(x = collectDate, y = dryMass)) +
+  labs(x = "Date", y = expression("Dry Mass(g)")) +
     geom_point() +
 facet_grid(nlcdClass~.)
 facet.plot
