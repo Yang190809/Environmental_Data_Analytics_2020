@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: GLMs week 1 (t-test and ANOVA)"
-author: "Student Name"
+author: "Yang Wang"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,9 +29,17 @@ The completed exercise is due on Tuesday, February 18 at 1:00 pm.
 
 ```{r, message = FALSE}
 #1
+getwd()
+library(tidyverse)
+library(cowplot)
+library(agricolae)
 
+lake<-read.csv("./Data/Processed/NTL-LTER_Lake_Nutrients_PeterPaul_Processed.csv")
 
 #2
+lake$sampledate <- as.Date(lake$sampledate, format = "%Y-%m-%d")
+class(lake$sampledate)
+head(lake)
 
 ```
 
@@ -40,7 +48,12 @@ The completed exercise is due on Tuesday, February 18 at 1:00 pm.
 
 3. Wrangle your dataset so that it contains only surface depths and only the years 1993-1996, inclusive. Set month as a factor.
 ```{r}
-
+library(plyr)
+lake.surface <- 
+  lake%>%
+filter(depth == 0) %>%
+filter(year4 == 1993|year4==1994|year4==1995|year4==1996) %>%
+lake$month <- as.factor(lake$month)
 
 ```
 
@@ -50,7 +63,7 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 4. Which application of the GLM will you use (t-test, one-way ANOVA, two-way ANOVA with main effects, or two-way ANOVA with interaction effects)? Justify your choice.
 
-> Answer: 
+> Answer: I will choose the two-way ANOVA with interaction because it involves two category factors including lake and season. Using interaction effect are more accurent as it including main effect and the interaction effection between lake and season.
 
 5. Run your test for TN. Include examination of groupings and consider interaction effects, if relevant.
 
@@ -58,9 +71,21 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 ```{r}
 #5
-
+shapiro.test(lake$tn_ug)
+tn.anova <- aov(data = lake, tn_ug ~ month*lakename)
+summary(tn.anova)
+tn.lm<-lm(data = lake, tn_ug ~ month*lakename)
+summary(tn.lm)
 
 #6
+shapiro.test(lake$tp_ug)
+tp.anova <- aov(data = lake, tp_ug ~ month*lakename)
+summary(tn.anova)
+tn.lm<-lm(data = lake, tn_ug ~ month*lakename)
+summary(tn.lm)
+
+Litter.Totals.anova <- aov(data = Litter.Totals, dryMass ~ plotID)
+summary(Litter.Totals.anova)
 
 
 ```
