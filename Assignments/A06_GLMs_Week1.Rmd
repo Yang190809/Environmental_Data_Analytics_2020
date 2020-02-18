@@ -48,13 +48,13 @@ head(lake)
 
 3. Wrangle your dataset so that it contains only surface depths and only the years 1993-1996, inclusive. Set month as a factor.
 ```{r}
-library(plyr)
+#library(plyr)
 lake.surface <- 
   lake%>%
-filter(depth == 0) %>%
-filter(year4 == 1993|year4==1994|year4==1995|year4==1996) %>%
-lake$month <- as.factor(lake$month)
+filter(depth == 0.00)%>%
+filter(year4 == 1993|year4==1994|year4==1995|year4==1996) 
 
+lake.surface$month <- as.factor(lake.surface$month)
 ```
 
 ## Analysis
@@ -63,7 +63,7 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 4. Which application of the GLM will you use (t-test, one-way ANOVA, two-way ANOVA with main effects, or two-way ANOVA with interaction effects)? Justify your choice.
 
-> Answer: I will choose the two-way ANOVA with interaction because it involves two category factors including lake and season. Using interaction effect are more accurent as it including main effect and the interaction effection between lake and season.
+> Answer: I will choose the two-way ANOVA with interaction effect because it involves two category factors including lake and season. The reason for including interaction is that temperature is very likely to interact with lake.
 
 5. Run your test for TN. Include examination of groupings and consider interaction effects, if relevant.
 
@@ -71,22 +71,38 @@ Peter Lake was manipulated with additions of nitrogen and phosphorus over the ye
 
 ```{r}
 #5
-shapiro.test(lake$tn_ug)
-tn.anova <- aov(data = lake, tn_ug ~ month*lakename)
+shapiro.test(lake.surface$tn_ug)
+tn.anova <- aov(data = lake.surface, tn_ug ~ month*lakename)
 summary(tn.anova)
-tn.lm<-lm(data = lake, tn_ug ~ month*lakename)
+tn.lm<-lm(data = lake.surface, tn_ug ~ month*lakename)
 summary(tn.lm)
+# Checking model fit and assumptions
+par(mfrow=c(2,2))
+plot(tn.anova)
+
+# Post-hoc test,plot pairwise difference
+TukeyHSD(tn.anova)
 
 #6
-shapiro.test(lake$tp_ug)
-tp.anova <- aov(data = lake, tp_ug ~ month*lakename)
-summary(tn.anova)
-tn.lm<-lm(data = lake, tn_ug ~ month*lakename)
-summary(tn.lm)
+shapiro.test(lake.surface$tp_ug)
+tp.anova <- aov(data = lake.surface, tp_ug ~ month*lakename)
+summary(tp.anova)
+tp.lm<-lm(data = lake.surface, tp_ug ~ month*lakename)
+summary(tp.lm)
+#significant difference in lakename and interaction between lakename and month.
+par(mfrow=c(2,2))
+plot(tp.anova)
 
-Litter.Totals.anova <- aov(data = Litter.Totals, dryMass ~ plotID)
-summary(Litter.Totals.anova)
+# Post-hoc test,plot pairwise difference
+TukeyHSD(tp.anova)
 
+#interaction effect
+tp.inter <- with(lake.surface, interaction(month, lakename))
+tp.inter
+tp.inter.anova <- aov(data = lake.surface, tp_ug ~ tp.inter)
+tp.inter.anova
+tp.groups <- HSD.test(tp.inter.anova, "tp.inter", group = TRUE)
+tp.groups
 
 ```
 
@@ -96,10 +112,33 @@ summary(Litter.Totals.anova)
 
 ```{r}
 #7
+mytheme <- theme_classic(base_size = 14) +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
 
+tn.plot <- ggplot(lake.surface, aes(y = tn_ug, x = month, color=lakename)) +
+  geom_boxplot()+
+  #theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  stat_summary(position=position_dodge(width=0.75),geom = "text", fun.y = max, vjust = -1,hjust=0, size = 3.5,
+               label = c("a", "b", "a", "b","a", "b","a", "b","a", "b")) +
+  labs(x = "month", y = "TN concentration (g)") +
+  ylim(0, 2500)
+print(tn.plot)
 
-#8
+tp.plot <- ggplot(lake.surface, aes(y = tp_ug, x = month, color=lakename)) +
+  geom_boxplot()+
+  #theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  stat_summary(position=position_dodge(width=0.75),geom = "text", fun.y = max, vjust = -1,hjust=0, size = 3.5,
+               label = c("cd","bcd","d","ab","d","a","d","abc","cd","abcd")) +
+  labs(x = "month", y = "TP concentration (g)") +
+  theme(legend.position="none")+
+  ylim(0, 100)
+print(tp.plot)
 
+ #8
+library(cowplot)
+plot_grid(tn.plot, tp.plot, nrow = 2, align = 'h', rel_heights = c(1.25, 1))
 ```
 
 
