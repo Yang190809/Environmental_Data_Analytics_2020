@@ -13,6 +13,8 @@ editor_options:
 3. Interpret and report the results of linear regressions in publication-style formats
 3. Apply model selection methods to choose model formulations
 
+Tukey test check main effect or interaction, never both.
+
 ## Set up
 ```{r, message = FALSE}
 getwd()
@@ -25,6 +27,7 @@ library(nlme)
 library(piecewiseSEM)
 
 PeterPaul.chem.nutrients <- read.csv("./Data/Processed/NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv")
+biomarker <- read.csv("./Data/Raw/biomarker1.csv")
 NTL.chem <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 
 NTL.chem$sampledate <- as.Date(NTL.chem$sampledate, format = "%m/%d/%y")
@@ -49,14 +52,18 @@ summary(TNancova.main)
 # interaction effects
 TNancova.interaction <- lm(data = PeterPaul.chem.nutrients, tn_ug ~ lakename * depth)
 summary(TNancova.interaction)
-
+# interaction makes the two lines  of different lake have different slope.
 TNplot <- ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = tn_ug, color = lakename)) + 
-  geom_point() + 
+  geom_point(alpah=0.5) + 
   geom_smooth(method = "lm", se = FALSE) +
+  labs(x="Depth(m)", y=expression(TN~(mu*g/L)),color="")+
+  scale_color_brewer(palette="Dark2")+
+  scale_color_manual(values=c("darkblue","pink"))+
   xlim(0, 10)
+
 print(TNplot)
 
-# Make the graph attractive
+# Make the graph attractive, how do you know the lm consider the interaction?
 ```
 
 ## HIERARCHICAL MODELS
@@ -99,31 +106,36 @@ Next, we will build a hierarchical model. We will use the package `nlme` for our
 
 
 ```{r}
-TempTest.mixed <- lme(data = NTL.summertemp,
+TempTest.mixed <- lme(data = NTL.summertemp,#lme is linear mixing effect.
                      temperature_C ~ year4, 
-                     random = ~1|lakename)
+                     random = ~1|lakename)#let the lake to be random effect
 summary(TempTest.mixed)
-rsquared(TempTest.mixed)
+rsquared(TempTest.mixed)#marginal is the fixed effect, conditional R2 is after adding random effect
 
 # Compare the random effects model with the fixed effects model
 TempTest.fixed <- gls(data = NTL.summertemp,
-                      temperature_C ~ year4)
+                      temperature_C ~ year4)#gls gives a slightly different output???
 summary(TempTest.fixed)
 
 anova(TempTest.mixed, TempTest.fixed)
 # The lower the AIC, the better.
-# The p-value tells us whether those models have a significantly different fit
+# The p-value tells us whether those models have a significantly different fit, the null hypothesis is that the models do not have significantly different.
+#AIC is only useful when you compare models together in a AIC()
 
 NTL.tempmodel <-
-ggplot(NTL.summertemp, aes(x = year4, y = temperature_C, color = lakename)) +
-  geom_point() +
+ggplot(NTL.summertemp, aes(x = year4, y = temperature_C)) +
+  geom_point(aes(color=lakename)) +
+  geom_smooth(method="lm",se=FALSE)+
   scale_color_viridis_d() +
   geom_abline(intercept = -97.72, slope = 0.06) +
   # make it look better
   labs(x = "", y = expression("Temperature " ( degree~C)), color = "") +
   theme(legend.spacing.x = unit(0, "cm"))
+
 print(NTL.tempmodel)
+#using geom smooth is dangerous, always need to know what do you want to graph
 ```
+
 
 Question: How would you interpret the collective results of your mixed effects model in the context of the study question?
 
