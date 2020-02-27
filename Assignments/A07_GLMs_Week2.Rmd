@@ -25,20 +25,18 @@ The completed exercise is due on Tuesday, February 25 at 1:00 pm.
 
 2. Build a ggplot theme and set it as your default theme.
 
-```{r}
+```{r message=FALSE}
 #1
 getwd()
 library(tidyverse)
 library(nlme)
 library(piecewiseSEM)
-library(lubridate)
 lake<- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 
 #2
-# Set theme
 mytheme <- theme_classic(base_size = 14) +
   theme(axis.text = element_text(color = "black"), 
-        legend.position = "bottom")
+        legend.position = "right")
 theme_set(mytheme)
 
 ```
@@ -59,26 +57,23 @@ Research question: What is the best set of predictors for lake temperatures in J
 #3
 lake.july <- 
 lake%>%
-filter(daynum >180 & daynum <211)%>%
-select(lake, lakename, year4, daynum, depth, temperature_C)%>%
+filter(daynum >181 & daynum <213)%>%
+select(lakename, year4, daynum, depth, temperature_C)%>%
 na.omit()
 
 
 #4
-
-cor.lake <- cor(lake.july)
-cor.plot<- corrplot.mixed(cor.lake, upper = "ellipse")
-
 lake.AIC <- lm(data = lake.july,temperature_C ~ depth + year4 + lakename+ daynum )
-step(TPAIC)
+
+step(lake.AIC)
 
 lake.main<-lm (data = lake.july,temperature_C ~ depth + year4 + lakename+ daynum )
-
+summary(lake.main)
 ```
 
 5. What is the final set of explanatory variables that predict temperature from your multiple regression? How much of the observed variance does this model explain?
 
-> Answer: 
+> Answer: The final explanatory variables include depth, year, lakename and day number. This model explains 77.87% of the observed variance.
 
 6. Run an interaction effects ANCOVA to predict temperature based on depth and lakename from the same wrangled dataset.
 
@@ -91,19 +86,19 @@ summary(lake.inter)
 
 7. Is there a significant interaction between depth and lakename? How much variance in the temperature observations does this explain?
 
-> Answer: 
+> Answer: Yes, the interaction between depth and lakename is significant (F(17,9390)=2009, p value<0.001).This model explains 78.39% of the variance in the temperature observations.
 
 8. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r}
 #8
 lake.plot <-
-ggplot(lake.july, aes(x = depth, y = temperature_C)) +
-  geom_point(aes(color=lakename,alpha=0.5)) +
+ggplot(lake.july, aes(x = depth, y = temperature_C,color=lakename)) +
+  geom_point(aes(alpha=0.5)) +
   geom_smooth(method="lm",se=FALSE)+
-  scale_color_viridis_d() +
-  labs(x = "", y = expression("Temperature " ( degree~C)), color = "") +
-  ylim()+
+  scale_color_brewer(palette = "Set2",direction = 1) +
+  labs(x = "Depth(m)", y = expression("Temperature " ( degree~C)), color = "") +
+  ylim(0,35)+
   theme(legend.spacing.x = unit(0, "cm"))
 
 print(lake.plot)
@@ -122,18 +117,23 @@ litter.mixed <- lme(data = litter,
                      dryMass ~ nlcdClass*functionalGroup, 
                      random = ~1|plotID)
 summary(litter.mixed)
-rsquared(litter.mixed)#marginal is the fixed effect, conditional R2 is after adding random effect
+r2<-rsquared(litter.mixed)
+r2
+r2$Conditional
+r2$Marginal
+#marginal is the fixed effect, conditional R2 is after adding random effect
 ```
 
 b. continued... How much more variance is explained by adding the random effect to the model? 
 
-> Answer: 2 %
+> Answer: 2.13 % more variance is explained by adding the random effect to the model.
 
 c. Run the same model without the random effect.
 d. Run an anova on the two tests. 
 ```{r}
 litter.fixed <- lm(data = litter,
                       dryMass ~ nlcdClass*functionalGroup )
+
 summary(litter.fixed)
 
 anova(litter.mixed, litter.fixed)
@@ -142,4 +142,5 @@ anova(litter.mixed, litter.fixed)
 
 d. continued... Is the mixed effects model a better model than the fixed effects model? How do you know?
 
-> Answer: The mixed effects model is a better model than the fixed effects model because it has higher R2 value, which means the model has higher power in expalinin gthe varience of the data.
+> Answer: The mixed effects model is better than the fixed effects model because it has a higher R2 value comparing to the fixed effects model. It means the mixed model has higher power in explaining the variance of the data. In addition, the mixed model has a lower AIC compared to the fixed model.
+
