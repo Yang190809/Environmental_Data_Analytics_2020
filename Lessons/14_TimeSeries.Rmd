@@ -25,7 +25,7 @@ library(trend)
 library(zoo)
 
 # Set theme
-mytheme <- theme_classic(base_size = 14) +
+mytheme <- theme_classic(base_size = 14) + #base size of font
   theme(axis.text = element_text(color = "black"), 
         legend.position = "top")
 theme_set(mytheme)
@@ -77,7 +77,7 @@ Let's start by removing the NAs and splitting the dataset into the early and lat
 
 ```{r}
 EnoDischarge.complete <- EnoDischarge %>%
-  drop_na(discharge.mean)
+  drop_na(discharge.mean)#na.omit and na_exclude are the same.
 
 EnoDischarge.early <- EnoDischarge.complete %>%
   filter(datetime < as.Date("1985-01-01"))
@@ -102,7 +102,7 @@ We first need to turn the discharge data into a time series object in R. This is
 Note: time series objects must be equispaced. In our case, we have daily data with no NAs in the data frame, so we don't need to worry about this. We will cover how to address data that are not equispaced later in the lesson.
 
 ```{r}
-EnoDischarge.late_ts <- ts(EnoDischarge.late[[8]], frequency = 365)
+EnoDischarge.late_ts <- ts(EnoDischarge.late[[8]], frequency = 365)#365 generate daily data, [8] choosespecific column.
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
@@ -111,15 +111,18 @@ The `stl` function decomposes the time series object into its component parts. W
 ?stl
 # Generate the decomposition
 EnoDischarge.late_Decomposed <- stl(EnoDischarge.late_ts, s.window = "periodic")
+#stl only works with time series data frame, 
 
 # Visualize the decomposed series. 
-plot(EnoDischarge.late_Decomposed)
+plot(EnoDischarge.late_Decomposed)#trend is movign average.the bar are the same in the scale. the bar scale of the trend and seasoal are much smaller than the data, which means the data cannot be explained by the seasonal and trend.
+#one season here is the cycle of 365 (a year)
 
 # We can extract the components and turn them into data frames
 EnoDischarge.late_Components <- as.data.frame(EnoDischarge.late_Decomposed$time.series[,1:3])
+
 EnoDischarge.late_Components <- mutate(EnoDischarge.late_Components,
                       Observed = EnoDischarge.late$discharge.mean,     
-                      Date = EnoDischarge.late$datetime)
+                      Date = EnoDischarge.late$datetime)#adding two columns
 
 # Visualize how the trend maps onto the data
 ggplot(EnoDischarge.late_Components) +
@@ -134,6 +137,7 @@ ggplot(EnoDischarge.late_Components) +
   geom_line(aes(y = seasonal, x = Date), color = "#c13d75ff") +
   geom_hline(yintercept = 0, lty = 2) +
   ylab(expression("Discharge (ft"^3*"/s)"))
+#stl can produce negative value 
 
 ```
 
@@ -159,20 +163,25 @@ Note: ALWAYS look into the assumptions of a given test to ensure it matches with
 Let's say we wanted to know whether discharge was higher in the early period or the late period. Perhaps there was a change in the methodology of streamflow measurement between the two periods that caused a differene in the magnitude of measured discharge?
 
 ```{r}
-EnoDischarge.early.subsample <- sample_n(EnoDischarge.early, 5000)
+EnoDischarge.early.subsample <- sample_n(EnoDischarge.early, 5000)#subsample 5000 for the shapiro test
 EnoDischarge.late.subsample <- sample_n(EnoDischarge.late, 5000)
 
+#t test assumption are the normality and equal variance
 shapiro.test(EnoDischarge.early.subsample$discharge.mean)
 shapiro.test(EnoDischarge.late.subsample$discharge.mean)
 
 var.test(EnoDischarge.early$discharge.mean, EnoDischarge.late$discharge.mean)
 
+#we cannot use t test, use wilcox.test instead
 wilcox.test(EnoDischarge.early$discharge.mean, EnoDischarge.late$discharge.mean)
+#significant difference between discharge from two period.
+summary(EnoDischarge.early$discharge.mean)
+summary(EnoDischarge.late$discharge.mean)
 ```
 
 How might you interpret the results of this test, and how might you represent them graphically?
 
->
+>The discharge from early period are significantly higher than the late period (Wilcoxon test, p value<0.001) .
 
 ### Monotonic trend analysis
 
