@@ -82,6 +82,7 @@ EnoDischarge.complete <- EnoDischarge %>%
 EnoDischarge.early <- EnoDischarge.complete %>%
   filter(datetime < as.Date("1985-01-01"))
 
+
 EnoDischarge.late <- EnoDischarge.complete %>%
   filter(datetime > as.Date("1985-01-01"))
 ```
@@ -189,11 +190,11 @@ In general, detecting a monotonic trend requires a long sequence of data with fe
 
 Adjusting the data may be necessary to fulfill the assumptions of a trend test. These adjustments include **aggregation**, **subsampling**, and **interpolation**. What do each of these mean, and why might we want to use them?
 
-> aggregation: 
+> aggregation: using many data points to generate one data points.
 
-> subsampling: 
+> subsampling: random 
 
-> interpolation: 
+> interpolation: fill up gaps
 
 Common interpolation methods: 
 
@@ -213,11 +214,13 @@ ggplot(NCAir, aes(x = Date, y = Ozone)) +
   facet_wrap(vars(Site.Name))
 print(NCOzone)
 
+#for the gap, using interpolation might not be good, as the complete data has a lower curves
 NCPM2.5 <-
 ggplot(NCAir, aes(x = Date, y = PM2.5)) +
   geom_point() +
   facet_wrap(vars(Site.Name))
 print(NCPM2.5)
+
 
 summary(NCAir$Site.Name)
 
@@ -229,13 +232,14 @@ ggplot(NCAir.Garinger, aes(x = Date, y = Ozone)) +
   geom_point() 
 print(GaringerOzone)
 
-# na.approx function fills in NAs with a linear interpolation
+# na.approx function fills in NAs with a linear interpolation (using mean)
 # Spline interpolation can also be specified as an alternative
 # Piecewise constant interpolation can be done with na.aggregate
 NCAir.Garinger$Ozone <- na.approx(NCAir.Garinger$Ozone)
 NCAir.Garinger$PM2.5 <- na.approx(NCAir.Garinger$PM2.5)
+#these interpolation assume the time points are equal spaced
 
-GaringerOzone.interpolated <-
+ GaringerOzone.interpolated <-
 ggplot(NCAir.Garinger, aes(x = Date, y = Ozone)) +
   geom_point() 
 print(GaringerOzone.interpolated)
@@ -246,7 +250,7 @@ print(GaringerOzone.interpolated)
 Specific tests for monotonic trend analysis are listed below, with assumptions and tips: 
 
 * **linear regression**: no seasonality, fits the assumptions of a parametric test. Function: `lm`
-* **Mann-Kendall**: no seasonality, non-parametric, no temporal autocorrelation, missing data allowed. Function: `mk.test` (package: trend)
+* **Mann-Kendall**: no seasonality, non-parametric, no temporal autocorrelation, missing data allowed. Function: `mk.test` (package: trend),assume normal distribution.
 * **modified Mann-Kendall**: no seasonality, non-parametric, accounts for temporal autocorrelation, missing data allowed. Function: `mmky` and `mmkh` (package: modifiedmk)
 * **Seasonal Mann-Kendall**: seasonality, non-parametric, no temporal autocorelation, identical distribution. Function: `smk.test` (package: trend)
 
@@ -267,23 +271,25 @@ EnoDischarge.late.monthly <- EnoDischarge.late %>%
   mutate(Year = year(datetime), 
          Month = month(datetime)) %>%
   group_by(Year, Month) %>%
-  summarise(Discharge = mean(discharge.mean)) 
+  summarise(Discharge = mean(discharge.mean)) #the output only has three columns.
   
 EnoDischarge.late.monthly$Date <- as.Date(paste(EnoDischarge.late.monthly$Year, 
                                                 EnoDischarge.late.monthly$Month, 
                                                 1, sep="-"), 
-                                          format = "%Y-%m-%d")
+                                          format = "%Y-%m-%d")# create a column
 
 # Generate time series (smk.test needs ts, not data.frame)
 EnoDischarge.late.monthly.ts <- ts(EnoDischarge.late.monthly$Discharge, frequency = 12, 
-                        start = c(1985, 10, 1), end = c(2019, 12, 1))
+                        start = c(1985, 10, 1), end = c(2019, 12, 1))#the cycle is a year, with a frequence of 12 month,time series does not show columns in tenvironment.
+
+
 # Run SMK test
-EnoDischarge.late.trend <- smk.test(EnoDischarge.late.monthly.ts)
+EnoDischarge.late.trend <- smk.test(EnoDischarge.late.monthly.ts)#put itme series inside
 
 # Inspect results
-EnoDischarge.late.trend
+EnoDischarge.late.trend #pa value is compute from the z value, negative z means decresing trend, p value big means no significance
 summary(EnoDischarge.late.trend)
-
+# no significnat difference between the same month of different year
 EnoDischarge.monthly <-
 ggplot(EnoDischarge.late.monthly, aes(x = Date, y = Discharge)) +
   geom_point() +
@@ -293,7 +299,8 @@ print(EnoDischarge.monthly)
 
 What would we conclude based on these findings? 
 
->
+> The discharge of Eno river does not show significant change in last 30 years(SMK, Z=-0.1397 , p=0.8889)
+Even though one or more months have significant difference, the overall test does not necessary turn out to be signifcant. This test does not have freedom.ALways report the z value.
  
 If a significant trend was present, we could compute a **Sen's Slope** to quantify that trend (`sens.slope` function in the trend package).
 
