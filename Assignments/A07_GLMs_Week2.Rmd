@@ -31,7 +31,7 @@ getwd()
 library(tidyverse)
 library(nlme)
 library(piecewiseSEM)
-lake<- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+ lake<- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
 
 #2
 mytheme <- theme_classic(base_size = 14) +
