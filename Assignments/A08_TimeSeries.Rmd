@@ -70,27 +70,20 @@ GaringerOzone2019<- read.csv("./Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC20
 # 2 
 GaringerOzone <- rbind(GaringerOzone2010,GaringerOzone2011,GaringerOzone2012,GaringerOzone2013,GaringerOzone2014,GaringerOzone2015,GaringerOzone2016,GaringerOzone2017,GaringerOzone2018,GaringerOzone2019)
 
-
 # 3
 GaringerOzone$Date <- as.Date(GaringerOzone$Date, format = "%m/%d/%Y")
 
 # 4
-
 Ozone <-
   GaringerOzone%>%
 select(Date, Daily.Max.8.hour.Ozone.Concentration,DAILY_AQI_VALUE)
 
-
-
 # 5
 Days <- as.data.frame(seq(as.Date("2010-01-01"), as.Date("2019-12-31"), "day"))
-
 names(Days)[1]<-"Date"
 
 # 6
-
 GaringerOzone<- merge(x=Days, y=Ozone, by="Date", all.x=TRUE)
-
 
 ```
 
@@ -114,7 +107,7 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 8. Use a linear interpolation to fill in missing daily data for ozone concentration. Why didn't we use a piecewise constant or spline interpolation?
 
-> Answer: The ozone concentration from day to day are related to each other. For a any missing data, the concentration are close to the neighbor date. Spline interpolation might exaggeration the actual concentration.
+> Answer: The ozone concentration from day to day are related to each other, which means the ozone concentration from any date are ralated to the data from two neighbor date. Therefore, using the linear interpolation can consider the both data around the missing data while interpolating. Spline interpolation might exaggerate the actual concentration.
 
 9. Create a new data frame called GaringerOzone.monthly that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
 
@@ -122,7 +115,7 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 
 11. Run a time series analysis. In this case the seasonal Mann-Kendall is most appropriate; why is this?
 
-> Answer: Because the Seasonal Mann-Kendall consider seasonality in our data.
+> Answer: Our data have seasonality and do not have temporal correlation, which fits the requirements of Seasonal Mann-Kendall. Normal Mann-Kendall does not consider the seasonality and modified Mann-Kendall  accounts for temporal autocorrelation
 
 12. To figure out the slope of the trend, run the function `sea.sens.slope` on the time series dataset. 
 
