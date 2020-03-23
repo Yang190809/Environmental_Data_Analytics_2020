@@ -257,7 +257,6 @@ We'll also being using Southeast state boundary data from the United States Cens
 Here is what the spatial data for this lesson looks like (Figure 4). Southeast state boundaries are shown in dark green, watershed boundaries are shown in light green, and stream gage locations are shown as grey points.
 
 ![Figure 4. Data used in this lesson.](img/gagesii.png)
-
 ### 2.2 Loading in the Data
 
 Start by reading in the basin boundaries for non-reference (i.e., notable human impact) for the Southeast Plains using `st_read()` from the sf package. Notice how you only call the .shp file here. You don't need to include all the other files that come along with the .shp file (i.e., .prj, .sbn, .shx, .sbx, .dbf, etc.).
@@ -400,6 +399,7 @@ gages <- gages_raw
 st_crs(gages) <- my_proj4
 gages <- gages %>%
   st_set_crs(my_epsg)
+
 st_crs(gages)
 
 # state bounds
@@ -425,7 +425,7 @@ st_crs(basins_nf_seplains)
 st_crs(gages)
 st_crs(southeast_state_bounds)
 st_crs(southeast_state_bounds_na_albers)
-# first three should be the same!
+ # first three should be the same!
 ```
 
 ### 2.6 Converting sp Objects to sf Objects and Vice Versa
@@ -466,6 +466,10 @@ names(gages_tabular)
 # convert to sf object
 gages_tabular_as_sf <- st_as_sf(gages_tabular, coords = c("LNG_GAGE", "LAT_GAGE"), crs = 4326, dim = "XY") # lat long so set CRS = WGS84
 
+## 4326 is the projection of any shp data tranfered from coordinates,
+# if you have meters, you need to ask about the projection, then project
+#setting is tell the R what it is
+#projecting is change
 # check class and CRS
 class(gages_tabular_as_sf)
 head(gages_tabular_as_sf)
@@ -560,7 +564,7 @@ nc_state_bounds_geom <- southeast_state_bounds %>%
   filter(NAME == "North Carolina") %>%
   st_geometry()
   # if I wanted Florida instead, what would I need to do?
-
+#choose the NC then drop the attribute and get the shp
 # check
 # add your code here
 head(nc_state_bounds_geom)
@@ -570,8 +574,11 @@ head(nc_state_bounds_geom)
 nc_basins_nf_seplains <- basins_nf_seplains %>%
   st_intersection(nc_state_bounds_geom)
 
+#bound is the cookie cutter to cut the basin
+
 # check
 # add your code here
+
 head(nc_basins_nf_seplains)
 
 # select gages that fall within NC bounds
@@ -581,10 +588,14 @@ nc_gages <- gages %>%
 
 # bonus
 # add your code here
-nc_area <- st_area(nc_state_bounds_geom) # find the area of NC
-nc_centroid <- st_centroid(nc_state_bounds_geom) # find the centroid of the NC
-nc_gages_buffer_100m <- st_buffer(nc_gages, dist = 100) # make a buffer around the stream gages in NC
+nc_area <- st_area(nc_state_bounds_geom)
+nc_area# find the area of NC
+nc_centroid <- st_centroid(nc_state_bounds_geom) 
+nc_centroid# find the centroid of the NC
+nc_gages_buffer_100m <- st_buffer(nc_gages, dist = 100)
+nc_gages_buffer_100m# make a buffer around the stream gages in NC
 not_nc_gages <- st_difference(gages, nc_state_bounds_geom) # find stream gages not in NC
+not_nc_gages
 ```
 
 It's really helpful to actually plot these results before moving forward with your work. That way you an make sure the sf commands are doing what you expect. We'll talk about plotting next...

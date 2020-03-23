@@ -573,6 +573,7 @@ Usually, I (Sheila) use RStudio to visualize all of my plots but since spatial d
 
 ```{r basic.sf.plotting}
 # basic plot
+#leave ggplot() open, because we want to add many layers, do the boundary first
 pdf(here("outputs", "southeast_state_bounds.pdf"), width = 11, height = 8.5)
 ggplot() +
   geom_sf(data = southeast_state_bounds) + # you can add color = "blue" to change outline color to blue or lwd = 2 to change the width of the lines
@@ -603,6 +604,14 @@ Let's check your operations from the 3.1.2 activity. You are trying for somethin
 ```{r activity.checking.operations}
 # plot NC watershed boundardies from 3.1.2
 pdf(here("outputs", "spatial_operations_test_fig.pdf"), width = 11, height = 8.5)
+ggplot() +
+  geom_sf(data = nc_state_bounds_geom,color="brown") + 
+   geom_sf(data = nc_basins_nf_seplains,fill="blue", alpha=0.25) + 
+   geom_sf(data = nc_gages) + # you can add color = "blue" to change outline color to blue or lwd = 2 to change the width of the lines
+  theme_bw() # add this to make the background white and not grey
+dev.off()
+
+
 # add your code here
 dev.off()
 ```
@@ -622,9 +631,9 @@ nc_state_bounds_geom <- southeast_state_bounds %>%
 # get data bounding box
 nc_bbox <- nc_state_bounds_geom %>%
   st_buffer(dist = 150000) %>% # this value is very arbitrary just wanting to make a large buffer around geometry
-  st_transform(4326) %>% # WGS84 (for lat and long)
+  st_transform(4326) %>% # WGS84 (for lat and long, projecting back to longitude and latitude)
   st_bbox()
-nc_bbox # check
+nc_bbox # find the coordinates of the box
 
 # fix bounding box columns so they match what is needed for the ggmap::get_map() function
 nc_bbox_fix <- c(left = nc_bbox[[1]], bottom = nc_bbox[[2]], right = nc_bbox[[3]], top = nc_bbox[[4]])
@@ -634,6 +643,7 @@ nc_bbox_fix
 
 # get basemap
 nc_basemap <- get_map(nc_bbox_fix, maptype = 'terrain-background', source = 'stamen', zoom = 8)
+#loading the tile based on the zoom
 class(nc_basemap)
 st_crs(nc_basemap)
 # you'll have to trust me that this will have a CRS = WGS84
@@ -783,7 +793,7 @@ To save sf data to .shp files or other spatial file types, use the st_write() co
 
 ```{r saving.data}
 # save nc_state_bounds_geom
-st_write(nc_state_bounds_geom, here("outputs", "nc_boundary.shp"))
+st_write(nc_state_bounds_geom, here("outputs", "nc_boundary.shp"))#save the shp file
 ```
 
 Look in your output directory to make sure your shp file is there!
