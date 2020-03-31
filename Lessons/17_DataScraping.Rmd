@@ -19,7 +19,7 @@ library(tidyverse)
 library(viridis)
 #install.packages("rvest")
 library(rvest)
-#install.packages("ggrepel")
+#install.packages("ggrepel")#for ggplot label
 library(ggrepel)
 
 # Set theme
@@ -76,12 +76,19 @@ Now that R knows which website we want to access, we need to tell it what conten
 6. Copy the text that appears in the window at the bottom of the screen and insert it in the following lines of code.
 ```{r}
 # Grab specific components of the website
-State <- webpage %>% html_nodes("table:nth-child(20) td:nth-child(1)") %>% html_text()
-Estuaries.Assessed.mi2 <- webpage %>% html_nodes("table:nth-child(20) td:nth-child(2)") %>% html_text()
-Estuaries.Assessed.percent <- webpage %>% html_nodes("table:nth-child(20) td:nth-child(3)") %>% html_text()
-Estuaries.Impaired.mi2 <- webpage %>% html_nodes("table:nth-child(20) td:nth-child(4)") %>% html_text()
-Estuaries.Impaired.percent <- webpage %>% html_nodes("table:nth-child(20) td:nth-child(5)") %>% html_text()
-Estuaries.Impaired.percent.TMDL <- webpage %>% html_nodes("table:nth-child(20) td:nth-child(6)") %>% html_text()
+State <- webpage %>%
+  html_nodes("table:nth-child(20) td:nth-child(1)") %>% html_text()
+##usually do not select the header as the R can not recoginize it as a header
+Estuaries.Assessed.mi2 <- webpage %>% 
+  html_nodes("table:nth-child(20) td:nth-child(2)") %>% html_text()
+Estuaries.Assessed.percent <- webpage %>%
+  html_nodes("table:nth-child(20) td:nth-child(3)") %>% html_text()
+Estuaries.Impaired.mi2 <- webpage %>% 
+  html_nodes("table:nth-child(20) td:nth-child(4)") %>% html_text()
+Estuaries.Impaired.percent <- webpage %>% 
+  html_nodes("table:nth-child(20) td:nth-child(5)") %>% html_text()
+Estuaries.Impaired.percent.TMDL <- webpage %>%
+  html_nodes("table:nth-child(20) td:nth-child(6)") %>% html_text()
 
 # Note: each of these objects has 23 items in it; consistency is good!
 # If lengths were not consistent you could use matrix subsetting to make consistent
@@ -141,34 +148,22 @@ Note: the fill aesthetic shows up gray for some states. Why?
 
 ```{r}
 
-ggplot(Estuary, aes(x = Estuaries.Assessed.percent, y = Estuaries.Impaired.percent, 
+plot1<-ggplot(Estuary, aes(x = Estuaries.Assessed.percent, y = Estuaries.Impaired.percent, 
                     fill = Estuaries.Impaired.percent.TMDL)) +
-  #
-  geom_point(shape = 21, size = 2, alpha = 0.8) 
-  #+ 
-  #
-  #scale_fill_viridis_c(option = "inferno", begin = 0.2, end = 0.9, direction = -1) +
-  # 
-  #geom_label_repel(aes(label = State), nudge_x = -5, nudge_y = -5, 
-  #                 size = 3, alpha = 0.8) +  
-  #
-  # labs(x = "% Estuaries Assessed (%)",
-  #      y = "% Estuaries Impaired (%)", 
-  #      fill = "% Impaired with TMDL")  
+  geom_point(shape = 21, size = 2, alpha = 0.8) + 
+  scale_fill_viridis_c(option = "inferno", begin = 0.2, end = 0.9, direction = -1) +
+  geom_label_repel(aes(label = State), nudge_x = -5, nudge_y = -5, size = 3, alpha = 0.8) +  
+   labs(x = "% Estuaries Assessed (%)",y = "% Estuaries Impaired (%)", fill = "% Impaired with TMDL")  
 
-ggplot(Estuary, aes(x = Estuaries.Assessed.mi2, y = Estuaries.Impaired.mi2, 
+plot2 <- ggplot(Estuary, aes(x = Estuaries.Assessed.mi2, y = Estuaries.Impaired.mi2, 
                     fill = Estuaries.Impaired.percent.TMDL)) +
-  geom_point(shape = 21, size = 2, alpha = 0.8) 
-  #+ 
-  #
-  # scale_fill_viridis_c(option = "inferno", begin = 0.2, end = 0.9, direction = -1) +
-  #
-  # geom_label_repel(data = subset(Estuary, State %in% c("Virginia", "Florida", "Louisiana", "Texas")), 
-  #            aes(label = State), nudge_x = -500, nudge_y = 200) +
-  #
-  # labs(x = expression("Estuary Area Assessed (mi"^"2"*")"),
-  #      y = expression("Estuary Area Impaired (mi"^"2"*")"), 
-  #      fill = "% Impaired with TMDL")
+  geom_point(shape = 21, size = 2, alpha = 0.8) + 
+  scale_fill_viridis_c(option = "inferno", begin = 0.2, end = 0.9, direction = -1) +
+   geom_label_repel(data = subset(Estuary, State %in% c("Virginia", "Florida", "Louisiana", "Texas")), 
+              aes(label = State), nudge_x = -500, nudge_y = 200) +
+   labs(x = expression("Estuary Area Assessed (mi"^"2"*")"),
+        y = expression("Estuary Area Impaired (mi"^"2"*")"), 
+        fill = "% Impaired with TMDL")
 
 
 ```
