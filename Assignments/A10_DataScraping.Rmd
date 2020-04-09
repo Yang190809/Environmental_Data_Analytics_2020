@@ -187,7 +187,7 @@ summary(mo)
 plot <- ggplot(water, aes(y =Lakes.Impaired.mi2,x =Rivers.Impaired.mi))+
   geom_smooth(method="lm",se=FALSE,color="darkgreen")+
   geom_point(shape=1,alpha=0.5,color="red")+
-  labs(x = "Rivers.Impaired.mi", y = "Lakes.Impaired.mi2") 
+  labs(x = "Rivers Impaired(mi)", y = "Lakes Impaired(mi2)",main="Relationship between impaired rivers and lakes") 
 print(plot)
 ```
 
