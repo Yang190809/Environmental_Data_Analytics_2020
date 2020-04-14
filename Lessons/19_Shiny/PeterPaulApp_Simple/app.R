@@ -34,7 +34,7 @@ server <- function(input, output) {
     # Create a ggplot object for the type of plot you have defined in the UI  
        output$scatterplot <- renderPlot({
         ggplot(nutrient_data, 
-               aes_string(x = "sampledate", y = input$y, 
+               aes_string(x = "sampledate", y = input$y, #name doesn't matter as long sa matched 
                           fill = "depth_id", shape = "lakename")) +
           geom_point(alpha = 0.8, size = 2) +
           theme_classic(base_size = 14) +
